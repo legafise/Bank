@@ -8,6 +8,7 @@ public class Bank
         extends Entity {
 
     private String name;
+    // TODO: 27.07.2024 поменять под проценты
     private BigDecimal individualFee;
     private BigDecimal legalEntityFee;
     private List<Account> accounts;

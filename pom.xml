@@ -16,9 +16,17 @@
         <maven.compiler.target>17</maven.compiler.target>
         <junit.version>3.8.1</junit.version>
         <log4j.version>2.20.0</log4j.version>
+        <postgresql.version>42.7.3</postgresql.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
