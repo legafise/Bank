@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 public class StopCommand
         implements Command {
 
-    private static final Logger log = LogManager.getLogger(StartCommand.class);
+    private static final Logger log = LogManager.getLogger(StopCommand.class);
 
     @Override
     public void execute(String[] params) {

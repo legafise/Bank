@@ -2,7 +2,6 @@ package com.lashkevich.bank.dao.connection;
 
 import com.lashkevich.bank.configuration.ConfigurationService;
 import com.lashkevich.bank.exception.ConnectionPoolException;
-import com.lashkevich.bank.exception.TransactionException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -76,24 +75,15 @@ public class ConnectionPool {
     }
 
     public Connection acquireConnection() throws ConnectionPoolException {
-        CONNECTION_LOCK.lock();
         try {
+            CONNECTION_LOCK.lock();
+            if (busyTransactionalConnections.containsKey(Thread.currentThread().getName())) {
+                return busyTransactionalConnections.get(Thread.currentThread().getName());
+            }
+
             Connection connection = takeConnection();
             busyConnections.push(connection);
             return connection;
-        } finally {
-            CONNECTION_LOCK.unlock();
-        }
-    }
-
-    public Connection acquireTransactionalConnection() throws ConnectionPoolException {
-        try {
-            CONNECTION_LOCK.lock();
-            if (!busyTransactionalConnections.containsKey(Thread.currentThread().getName())) {
-                throw new TransactionException("There is no started transactions for this thread");
-            }
-
-            return busyTransactionalConnections.get(Thread.currentThread().getName());
         } finally {
             CONNECTION_LOCK.unlock();
         }

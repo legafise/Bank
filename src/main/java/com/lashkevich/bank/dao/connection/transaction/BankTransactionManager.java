@@ -1,7 +1,6 @@
 package com.lashkevich.bank.dao.connection.transaction;
 
 import com.lashkevich.bank.dao.connection.ConnectionPool;
-import com.lashkevich.bank.dao.connection.transaction.impl.BankTransaction;
 import com.lashkevich.bank.exception.TransactionException;
 
 import java.sql.Connection;
@@ -12,22 +11,22 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 // This transaction implementation supports only 'REQUIRED' propagation
-public class TransactionManager {
+public class BankTransactionManager {
 
     private static final Map<String, Integer> TRANSACTIONAL_THREADS = new HashMap<>();
 
     private static final Lock INSTANCE_LOCK = new ReentrantLock();
-    private static TransactionManager instance;
+    private static BankTransactionManager instance;
 
-    private TransactionManager() {
+    private BankTransactionManager() {
     }
 
-    public static TransactionManager getInstance() {
+    public static BankTransactionManager getInstance() {
         if (instance == null) {
             try {
                 INSTANCE_LOCK.lock();
                 if (instance == null) {
-                    instance = new TransactionManager();
+                    instance = new BankTransactionManager();
                 }
             } finally {
                 INSTANCE_LOCK.unlock();
@@ -38,7 +37,7 @@ public class TransactionManager {
     }
 
 
-    public Transaction createTransaction() {
+    public BankTransaction createTransaction() {
         try {
             Connection connection;
             if (TRANSACTIONAL_THREADS.containsKey(Thread.currentThread().getName())) {
@@ -57,7 +56,7 @@ public class TransactionManager {
         }
     }
 
-    public void closeTransaction(Transaction transaction) {
+    public void closeTransaction(BankTransaction transaction) {
         Integer transactionsNumber = TRANSACTIONAL_THREADS.get(Thread.currentThread().getName());
         if (transactionsNumber == 1) {
             TRANSACTIONAL_THREADS.remove(Thread.currentThread().getName());
@@ -67,24 +66,15 @@ public class TransactionManager {
         }
     }
 
-    public void rollback(Transaction transaction) {
+    public void rollback(BankTransaction transaction) {
         if (TRANSACTIONAL_THREADS.get(Thread.currentThread().getName()) == 1) {
             transaction.rollback();
         }
     }
 
-    public void commit(Transaction transaction) {
+    public void commit(BankTransaction transaction) {
         if (TRANSACTIONAL_THREADS.get(Thread.currentThread().getName()) == 1) {
             transaction.commit();
-        }
-    }
-
-    public void rollbackIfPresent() {
-        if (TRANSACTIONAL_THREADS.containsKey(Thread.currentThread().getName())) {
-            Transaction transaction = new BankTransaction(ConnectionPool.getInstance().acquireTransactionalConnection());
-            transaction.rollback();
-            transaction.closeTransaction();
-            TRANSACTIONAL_THREADS.remove(Thread.currentThread().getName());
         }
     }
 

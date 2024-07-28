@@ -1,14 +1,12 @@
-package com.lashkevich.bank.dao.connection.transaction.impl;
+package com.lashkevich.bank.dao.connection.transaction;
 
 import com.lashkevich.bank.dao.connection.ConnectionPool;
-import com.lashkevich.bank.dao.connection.transaction.Transaction;
 import com.lashkevich.bank.exception.TransactionException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class BankTransaction
-        implements Transaction {
+public class BankTransaction {
 
     private final Connection connection;
 
@@ -17,8 +15,7 @@ public class BankTransaction
     }
 
 
-    @Override
-    public void commit() throws TransactionException {
+    protected void commit() throws TransactionException {
         try {
             connection.commit();
         } catch (SQLException e) {
@@ -26,8 +23,7 @@ public class BankTransaction
         }
     }
 
-    @Override
-    public void rollback() throws TransactionException {
+    protected void rollback() throws TransactionException {
         try {
             connection.rollback();
         } catch (SQLException e) {
@@ -35,8 +31,7 @@ public class BankTransaction
         }
     }
 
-    @Override
-    public void closeTransaction() {
+    protected void closeTransaction() {
         try {
             connection.setAutoCommit(true);
             ConnectionPool.getInstance().putBackTransactionalConnection();

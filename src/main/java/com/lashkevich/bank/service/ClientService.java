@@ -1,5 +1,8 @@
 package com.lashkevich.bank.service;
 
-public interface ClientService {
+import com.lashkevich.bank.entity.Client;
+
+public interface ClientService
+        extends Service<Client> {
 
 }

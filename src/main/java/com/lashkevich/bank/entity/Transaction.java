@@ -2,7 +2,6 @@ package com.lashkevich.bank.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Currency;
 import java.util.Objects;
 
 public class Transaction
